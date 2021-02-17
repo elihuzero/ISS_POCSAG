@@ -1,0 +1,91 @@
+sudo apt-get install jq
+
+sudo nano /usr/local/bin/distance.c
+
+============================================
+
+Compilacion avec gcc
+
+gcc /usr/local/bin/distance.c -o /usr/local/bin/distance -lm
+
+sudo chmod 755 /usr/local/bin/distance
+
+============================================
+
+Pi-Star Modo Experto 
+
+DAPNET API poner nuestro usuario y password
+
+============================================
+
+Ejecutar el Scrit cada 5 minutos
+
+sudo crontab -e
+
+*/5 * * * * /usr/local/bin/iss_pocsag_f1ptl.sh > /dev/null 2>&1
+
+============================================
+
+###################################################
+
+Creacion del archivo  : iss_pocsag_f1ptl.sh
+
+sudo nano /usr/local/bin/iss_pocsag_f1ptl.sh
+
+============================================
+Permisos al script 
+
+mount -o remount, rw /
+sudo chmod 755 /usr/local/bin/
+sudo chmod 755 /usr/local/bin/iss_pocsag_f1ptl.sh
+
+============================================
+
+Modificacion del Archivo : /etc/logrotate.conf
+
+sudo nano /etc/logrotate.conf
+
+# Rotation des logs pour ISS
+
+/var/log/iss_distance.log {
+
+missingok
+
+daily
+
+compress
+
+create 0660 root root
+
+rotate 2
+
+}
+
+============================================
+
+Verificacion de la rotacion en el archivo LOG
+
+#############################################
+
+sudo logrotate /etc/logrotate.conf
+
+cat /var/lib/logrotate/status
+
+	logrotate state -- version 2
+
+	"/var/log/nginx/error.log" 2018-9-14-0:21:0
+
+	"/var/log/syslog" 2018-9-14-0:21:0
+
+	.....
+
+	"/var/log/iss_distance.log" 2018-9-14-7:0:0 <==== Voici la ligne a vérifier ===========
+
+	.....
+
+	more /var/log/iss_distance.log
+
+09-14-2018 7:55:02 am CEST : La distance de ISS est de 7061.37 KM
+
+09-14-2018 8:00:02 am CEST : La distance de ISS est de 8324.43 KM
+
