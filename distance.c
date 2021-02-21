@@ -5,9 +5,7 @@
 #define EARTH_RADIUS (6371.0072 * 0.6214)
 #define TORADS(degrees) (degrees * (M_PI / 180))
 
-int main(int argc, char **argv)
-
-{
+int main(int argc, char **argv){
 
 	double lat1, long1, lat2, long2;
 	double dLat, dLong, a, c, d;
@@ -24,5 +22,4 @@ int main(int argc, char **argv)
 	cos(lat1) * cos(lat2) * sin(dLong/2) * sin(dLong/2);
 	c = 2 * atan2(sqrt(a), sqrt(1-a));
 	printf("%g\n", EARTH_RADIUS * c);
-
 }

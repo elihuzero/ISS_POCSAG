@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #
 # Version : 1.2
 #
@@ -12,14 +11,13 @@
 # Ajout variable ID_DMR
 #
 # Variables a modifier
-
 ##############################
 
 CALLSIGN=XE1REB
 ID_DMR=3340235
 MyLat=21.135792
 MyLong=-101.6569
-Dist_Km="1000"
+Dist_Km="3000"
 Votre_Mail=zero
 
 ##############################
@@ -28,28 +26,31 @@ Votre_Mail=zero
 
 #========================================================
 
-issLat='curl -s -H "Content-Type: application/json" -X GET http://api.open-notify.org/iss-now.json | jq -r [.iss_position] | sed -n -e 's/^.*"latitude": //p' | sed "s/\"//g" | sed "s/\,//g"`
-issLong='curl -s -H "Content-Type: application/json" -X GET http://api.open-notify.org/iss-now.json | jq -r [.iss_position] | sed -n -e 's/^.*"longitude": //p' | sed "s/\"//g" | sed "s/\,//g"`
+issLat=`curl -s -H "Content-Type: application/json" -X GET http://api.open-notify.org/iss-now.json | jq -r [.iss_position] | sed -n -e 's/^.*"latitude": //p' | sed "s/\"//g" | sed "s/\,//g"`
+
+issLong=`curl -s -H "Content-Type: application/json" -X GET http://api.open-notify.org/iss-now.json | jq -r [.iss_position] | sed -n -e 's/^.*"longitude": //p' | sed "s/\"//g" | sed "s/\,//g"`
 
 # Informations station radio
 
 #===========================
 
 echo "Mi Localizacion : $MyLat, $MyLong"
-echo "Localizacion de ISS : $issLat, $issLong"
+
+echo "Localizacion de la ISS : $issLat, $issLong"
+
 now=`date +"%d-%m-%Y %R"`
 
 # Logs ISS
 
 #=========
 
-iss_log="/var/log/iss_distance.log"
+#iss_log="/var/log/iss_distance.log"
 
 # Calcule de la distance en KM entre vous et ISS
 
 #===============================================
 
-distance='/usr/local/bin/distance $issLat $issLong $MyLat $MyLong '
+distance=`/usr/local/bin/distance $issLat $issLong $MyLat $MyLong `
 
 # Affichage et publication des informations
 
@@ -57,7 +58,8 @@ distance='/usr/local/bin/distance $issLat $issLong $MyLat $MyLong '
 
 if [ ${distance%.*} -lt ${Dist_Km} ]; then
 
-echo "${now} : ISS acercandose ${distance}KM" >> ${iss_log}
+echo "${now} : ISS esta acercandose a ${distance}KM" 
+#>> ${iss_log}
 
 if [ ${Votre_Mail} = "zero" ] ; then
 
@@ -65,14 +67,15 @@ echo "Ningun Mensaje"
 
 else
 
-echo "${now} : ISS acercandose ${distance}KM" | mail -s "ISS-Approche" ${Votre_Mail}
+echo "${now} : ISS esta acercandose a ${distance}KM" | mail -s "ISS-Acercandose" ${Votre_Mail}
 
 fi
 
-/usr/local/sbin/pistar-dapnetapi ${CALLSIGN} "${distance}KM ISS acercandose" debug
+sudo /usr/local/sbin/pistar-dapnetapi ${CALLSIGN} "${distance}KM ISS esta acercandose" debug
 
 else
 
-echo "${now} : ISS esta a ${distance}KM de tu posicion (${CALLSIGN})" >> ${iss_log}
+echo "${now} : ISS esta a ${distance}KM de tu posicion (${CALLSIGN})" 
+#>> ${iss_log}
 
 fi
